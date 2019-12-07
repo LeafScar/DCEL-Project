@@ -1,0 +1,122 @@
+﻿<Window x:Class="Viewer2D.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Viewer2D"
+        Title="MainWindow" Height="480" Width="720" x:Name="mainWindow" WindowState="Normal">
+    
+    <Grid>
+        <Menu VerticalAlignment="Top" VerticalContentAlignment="Stretch" Height="25">
+            <Menu.Resources>
+                <Style x:Key="Group1Style" TargetType="{x:Type RadioButton}">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="GroupName" Value="ViewMode" />
+                </Style>
+            </Menu.Resources>
+            <MenuItem Header="File">
+                <MenuItem Header="Open..." Click="fileOpen_Click"/>
+                <MenuItem Header="Save as..." />
+            </MenuItem>
+            <MenuItem Header="Polygon">
+                <MenuItem Header="Mesh Info" IsCheckable="True" Checked="OnInfoChecked" Unchecked="OnInfoUnchecked" />
+                <MenuItem Header="Call Method">
+                    <MenuItem x:Name="resolveMenuItem" Header="Resolve Boundary Edges" Click="modify_Click"/>
+                    <MenuItem x:Name="triang1MenuItem" Header="Triangulate" Click="modify_Click"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Viewmode">
+                <MenuItem Header="Geometry" Click="geometry_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="geometry_Checked" Unchecked="geometry_Unchecked" x:Name="geometryMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="DCEL Structure" Click="dcelStructure_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="dcelStructure_Checked" x:Name="dcelStructureMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Neighbours" Click="faceNeighbours_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="faceNeighbours_Checked" x:Name="faceNeighboursMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Sides" Click="faceSides_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="faceSides_Checked" x:Name="faceSidesMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Vertices" Click="faceVertices_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="faceVertices_Checked" x:Name="faceVerticesMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Leaving Edges" Click="leavingEdges_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="leavingEdges_Checked" x:Name="leavingEdgesMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Adjacent Faces" Click="adjacentFaces_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="adjacentFaces_Checked" x:Name="adjacentFacesMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Adjacent Vertices" Click="adjacentVertices_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="adjacentVertices_Checked" x:Name="adjacentVerticesMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="K Star" Click="kStar_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Unchecked="kStarMenuItem_Unchecked" Checked="kStar_Checked" x:Name="kStarMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Navigation" Click="navigation_Click">
+                    <MenuItem.Icon>
+                        <RadioButton Style="{StaticResource Group1Style}" Checked="navigation_Checked" Unchecked="navigation_Unchecked" x:Name="navigationMenuItem"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="Commands..." />
+                <MenuItem Header="About..." Click="AboutClick"/>
+            </MenuItem>
+        </Menu>        
+        <Border x:Name="border" MouseWheel="border_MouseWheel" ClipToBounds="True" Background="Transparent"
+                MouseMove="border_MouseMove" MouseLeftButtonDown="border_MouseLeftButtonDown"
+                MouseLeftButtonUp="border_MouseLeftButtonUp" MouseLeave="border_MouseLeave" Margin="0,25,0,0" />        
+        <ItemsControl x:Name="canvas" Margin="0,25,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseMove="canvas_MouseMove">
+            <ItemsControl.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="xform"/>
+                    <TranslateTransform x:Name="tt"/>
+                </TransformGroup>
+            </ItemsControl.RenderTransform>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Label x:Name="meshInfo" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+        <TextBox x:Name="kTextBox" Visibility="Hidden" MaxLength="3" Margin="35,40,0,0" Height="25" Width="30" VerticalContentAlignment="Center"
+                 HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="kTextBox_TextChanged" PreviewTextInput="kTextBox_PreviewTextInput" ContextMenu="{x:Null}"/>
+        <Label x:Name="kLabel" Visibility="Hidden" Margin="5,40,0,0" Content="K =" VerticalContentAlignment="Center" Height="25" Width="30" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Grid Name="grid1" Margin="5,30,568,208" VerticalAlignment="Top" Visibility="Hidden">
+            <Button Content="Twin" Height="23" HorizontalAlignment="Left" Margin="10,35,0,145" Name="twinButton" Width="75" Click="twinButton_Click" />
+            <Button Content="Previous" Height="23" HorizontalAlignment="Left" Margin="10,64,0,116" Name="previousButton" Width="75" Click="previousButton_Click" />
+            <!--<CheckBox Content="Origin" Height="16" HorizontalAlignment="Left" Margin="10,101,0,86" Name="checkBox2" />
+            <CheckBox Content="Face" Height="16" HorizontalAlignment="Left" Margin="10,124,0,64" Name="checkBox1" />-->
+            <Button Content="Next" Height="23" HorizontalAlignment="Left" Margin="10,6,0,174" Name="nextButton" Width="75" Click="nextButton_Click" />
+        </Grid>
+        <Label Content="" Height="25" HorizontalAlignment="Right" Name="coordLabel" VerticalAlignment="Bottom" Width="100" />
+    </Grid>
+</Window>
